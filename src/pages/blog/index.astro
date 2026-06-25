@@ -1,0 +1,93 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+
+const posts = [
+  {
+    slug: 'hello-world',
+    title: 'Hello W0r1D!',
+    date: '2026-06-26',
+    description: 'Day one. The name, the mission, and why we built ZapaGuard.',
+  },
+];
+---
+<Layout title="Blog — ZapaGuard">
+  <main>
+    <Nav />
+    <section class="container">
+      <h1 class="page-title">// blog <span class="cursor"></span></h1>
+      <ul class="post-list">
+        {posts.map(p => (
+          <li class="post-item">
+            <time>{p.date}</time>
+            <a href={`/blog/${p.slug}`}>{p.title}</a>
+            <p>{p.description}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+  }
+
+  .page-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.3rem;
+    color: var(--green);
+    font-weight: 400;
+    margin-bottom: 3rem;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 0.6ch;
+    height: 1.1em;
+    background: var(--green);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .post-list { list-style: none; display: flex; flex-direction: column; gap: 2rem; }
+
+  .post-item {
+    border: 1px solid var(--bg-border);
+    background: var(--bg-panel);
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .post-item:hover { border-color: var(--green-dim); }
+
+  .post-item time {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--green-dim);
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+  }
+
+  .post-item a {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    color: #e0ffe0;
+    display: block;
+    margin-bottom: 0.5rem;
+    text-decoration: none;
+  }
+
+  .post-item a:hover { color: var(--green-bright); }
+
+  .post-item p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>

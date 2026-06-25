@@ -1,0 +1,57 @@
+---
+import MatrixGlobe from '../components/MatrixGlobe.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = 'Zero-trust security proxy for the npm registry.' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <MatrixGlobe />
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:        #00c853;
+    --green-bright: #69ff47;
+    --green-dim:    #1a7a2e;
+    --green-muted:  #0d4a1a;
+    --bg:           #0d110d;
+    --bg-panel:     #111811;
+    --bg-border:    #1a2e1a;
+    --text:         #b0f0b0;
+    --text-dim:     #5a8a5a;
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    overflow-x: hidden;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+  }
+
+  a { color: var(--green); text-decoration: none; }
+  a:hover { color: var(--green-bright); text-decoration: underline; }
+</style>

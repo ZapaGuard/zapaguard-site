@@ -1,0 +1,114 @@
+---
+const links = [
+  { href: '/blog', label: 'Blog' },
+];
+---
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <span class="logo-bracket">[</span>ZapaGuard<span class="logo-bracket">]</span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" id="nav-toggle">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      {links.map(l => (
+        <li><a href={l.href}>{l.label}</a></li>
+      ))}
+      <li><a href="https://github.com/ZapaGuard" class="btn-nav" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<style>
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(13, 17, 13, 0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--bg-border);
+  }
+
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: var(--green-bright);
+    letter-spacing: 2px;
+    text-decoration: none;
+  }
+
+  .logo-bracket { color: var(--green-dim); }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--green-bright); text-decoration: none; }
+
+  .btn-nav {
+    border: 1px solid var(--green);
+    padding: 0.4rem 1rem;
+    color: var(--green) !important;
+    transition: background 0.2s, color 0.2s !important;
+  }
+
+  .btn-nav:hover {
+    background: var(--green);
+    color: var(--bg) !important;
+  }
+
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--green);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  @media (max-width: 700px) {
+    .nav-toggle { display: block; }
+
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 60px;
+      left: 0; right: 0;
+      background: rgba(13, 17, 13, 0.97);
+      border-bottom: 1px solid var(--bg-border);
+      padding: 1rem 0 1.5rem;
+      gap: 1.2rem;
+    }
+
+    .nav-links.open { display: flex; }
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const links = document.getElementById('nav-links');
+  toggle?.addEventListener('click', () => links?.classList.toggle('open'));
+</script>
