@@ -24,7 +24,7 @@ Required GitHub repository secrets:
 
 The Cloudflare API token should have Cloudflare Pages edit access for the account. The Pages project name used by the workflow is `zapaguard-site`, and the build output is `dist/`.
 
-The deploy workflow uses the `production` GitHub Environment. Configure that environment with the Cloudflare secrets and require `@silasistefan` as the reviewer before deployment.
+The deploy workflow uses the `production` GitHub Environment. Configure that environment with the Cloudflare secrets and require `@ZapaGuard` as the reviewer before deployment.
 
 ## Contributing
 
