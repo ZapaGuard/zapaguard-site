@@ -1,0 +1,385 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+<Layout title="ZapaGuard — Live Stats" description="Live scanning and download statistics from the ZapaGuard npm gateway.">
+  <main>
+    <Nav />
+
+    <section class="stats-page">
+      <div class="container">
+        <h1 class="section-title">// live_stats<span class="cursor">_</span></h1>
+        <p class="stats-meta" id="stats-meta">loading…</p>
+
+        <div class="kpi-grid" id="kpi-grid">
+          <div class="kpi"><span class="kpi-num" data-kpi="scan-count">—</span><span class="kpi-label">packages scanned · <em data-range-tag>24h</em></span></div>
+          <div class="kpi"><span class="kpi-num" data-kpi="scan-bytes">—</span><span class="kpi-label">data scanned · <em data-range-tag>24h</em></span></div>
+          <div class="kpi"><span class="kpi-num" data-kpi="dl-count">—</span><span class="kpi-label">packages downloaded · <em data-range-tag>24h</em></span></div>
+          <div class="kpi"><span class="kpi-num" data-kpi="dl-bytes">—</span><span class="kpi-label">data downloaded · <em data-range-tag>24h</em></span></div>
+        </div>
+
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-head">
+              <h2>Packages scanned</h2>
+              <div class="chart-range" role="group" aria-label="Time range">
+                <button class="range-btn selected" data-range="h24" aria-pressed="true">24h</button>
+                <button class="range-btn" data-range="d30" aria-pressed="false">30d</button>
+              </div>
+            </div>
+            <div data-chart="scan-count"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-head">
+              <h2>Data scanned</h2>
+              <div class="chart-range" role="group" aria-label="Time range">
+                <button class="range-btn selected" data-range="h24" aria-pressed="true">24h</button>
+                <button class="range-btn" data-range="d30" aria-pressed="false">30d</button>
+              </div>
+            </div>
+            <div data-chart="scan-bytes"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-head">
+              <h2>Packages downloaded</h2>
+              <div class="chart-range" role="group" aria-label="Time range">
+                <button class="range-btn selected" data-range="h24" aria-pressed="true">24h</button>
+                <button class="range-btn" data-range="d30" aria-pressed="false">30d</button>
+              </div>
+            </div>
+            <div data-chart="dl-count"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-head">
+              <h2>Data downloaded</h2>
+              <div class="chart-range" role="group" aria-label="Time range">
+                <button class="range-btn selected" data-range="h24" aria-pressed="true">24h</button>
+                <button class="range-btn" data-range="d30" aria-pressed="false">30d</button>
+              </div>
+            </div>
+            <div data-chart="dl-bytes"></div>
+          </div>
+        </div>
+
+        <details class="table-view">
+          <summary>view data as table</summary>
+          <div class="table-scroll">
+            <table id="hourly-table">
+              <thead>
+                <tr><th id="bucket-col">hour</th><th>pkgs scanned</th><th>data scanned</th><th>pkgs downloaded</th><th>data downloaded</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </details>
+
+        <h2 class="section-title blocked-title">// last_blocked_packages<span class="cursor">_</span></h2>
+        <div class="table-scroll blocked-panel">
+          <table id="blocked-table">
+            <thead>
+              <tr><th>when</th><th>package</th><th>scan type</th><th>blocked because</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <p class="empty-note" id="blocked-empty" hidden>no blocked packages yet — that's a good day.</p>
+        </div>
+      </div>
+    </section>
+
+    <Footer />
+  </main>
+</Layout>
+
+<script>
+  import { loadStats, fmtCount, fmtGB, fmtHour, fmtDay, fmtWhen } from '../lib/stats';
+  import type { RangeStats } from '../lib/stats';
+  import { renderAreaChart } from '../lib/charts';
+
+  const stats = await loadStats();
+
+  const meta = document.getElementById('stats-meta')!;
+  meta.textContent = `get.zapaguard.com · generated ${new Date(stats.generatedAt).toLocaleString()}` +
+    (stats.mock ? ' · demo data' : '');
+
+  interface RangeDef {
+    data: RangeStats;
+    sub: string;
+    tag: string;
+    bucketCol: string;
+    xEvery: number;
+    xFormat: (ts: number) => string;
+  }
+  const ranges: Record<string, RangeDef> = {
+    h24: { data: stats.h24, sub: 'last 24h', tag: '24h', bucketCol: 'hour', xEvery: 6, xFormat: fmtHour },
+    d30: { data: stats.d30, sub: 'last 30 days', tag: '30d', bucketCol: 'day', xEvery: 7, xFormat: fmtDay },
+  };
+
+  function render(key: string) {
+    const r = ranges[key];
+
+    document.querySelectorAll<HTMLButtonElement>('.range-btn').forEach((btn) => {
+      const on = btn.dataset.range === key;
+      btn.classList.toggle('selected', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
+    document.querySelectorAll('[data-range-tag]').forEach((n) => (n.textContent = r.tag));
+    document.getElementById('bucket-col')!.textContent = r.bucketCol;
+
+    const kpi = (name: string, text: string) => {
+      document.querySelector(`[data-kpi="${name}"]`)!.textContent = text;
+    };
+    kpi('scan-count', fmtCount(r.data.scans.totalCount));
+    kpi('scan-bytes', fmtGB(r.data.scans.totalBytes));
+    kpi('dl-count', fmtCount(r.data.downloads.totalCount));
+    kpi('dl-bytes', fmtGB(r.data.downloads.totalBytes));
+
+    const charts: [string, number[], (v: number) => string, string, boolean][] = [
+      ['scan-count', r.data.scans.count, fmtCount, `Packages scanned, ${r.sub}`, false],
+      ['scan-bytes', r.data.scans.bytes, fmtGB, `Data scanned, ${r.sub}`, true],
+      ['dl-count', r.data.downloads.count, fmtCount, `Packages downloaded, ${r.sub}`, false],
+      ['dl-bytes', r.data.downloads.bytes, fmtGB, `Data downloaded, ${r.sub}`, true],
+    ];
+    for (const [name, values, format, label, bytes] of charts) {
+      const box = document.querySelector(`[data-chart="${name}"]`) as HTMLElement;
+      box.replaceChildren();
+      renderAreaChart(box, {
+        hours: r.data.buckets,
+        values,
+        format,
+        label,
+        bytes,
+        xEvery: r.xEvery,
+        xFormat: r.xFormat,
+      });
+    }
+
+    // table view — every charted value reachable without hovering
+    const body = document.querySelector('#hourly-table tbody')!;
+    body.replaceChildren();
+    r.data.buckets.forEach((b, i) => {
+      const tr = document.createElement('tr');
+      for (const cell of [
+        r.xFormat(b),
+        fmtCount(r.data.scans.count[i]),
+        fmtGB(r.data.scans.bytes[i]),
+        fmtCount(r.data.downloads.count[i]),
+        fmtGB(r.data.downloads.bytes[i]),
+      ]) {
+        const td = document.createElement('td');
+        td.textContent = cell;
+        tr.append(td);
+      }
+      body.append(tr);
+    });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.range-btn').forEach((btn) => {
+    btn.addEventListener('click', () => render(btn.dataset.range!));
+  });
+  render('h24');
+
+  // blocked packages — names and signatures are untrusted, textContent only
+  const blockedBody = document.querySelector('#blocked-table tbody')!;
+  for (const b of stats.blocked.slice(0, 10)) {
+    const tr = document.createElement('tr');
+    const cells = [fmtWhen(b.ts), b.package ?? '—', b.scanner ?? 'clamav', b.reason ?? 'unknown'];
+    cells.forEach((cell, i) => {
+      const td = document.createElement('td');
+      td.textContent = cell;
+      if (i === 1) td.className = 'pkg';
+      if (i === 3) td.className = 'reason';
+      tr.append(td);
+    });
+    blockedBody.append(tr);
+  }
+  if (!stats.blocked.length) {
+    document.getElementById('blocked-table')!.hidden = true;
+    document.getElementById('blocked-empty')!.hidden = false;
+  }
+</script>
+
+<style is:global>
+  .chart-box { position: relative; }
+  .chart-svg { display: block; width: 100%; height: auto; font-family: 'Share Tech Mono', monospace; outline: none; cursor: crosshair; }
+  .chart-svg:focus-visible { outline: 1px solid var(--green-dim); outline-offset: 4px; }
+  .chart-tip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(13, 17, 13, 0.95);
+    border: 1px solid var(--green-dim);
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 5;
+  }
+  .chart-tip strong { display: block; color: var(--green-bright); font-size: 0.9rem; font-weight: 400; }
+  .chart-tip span { color: var(--text-dim); }
+
+  /* rows below are built with JS, so they need global (unscoped) rules */
+  #hourly-table td,
+  #blocked-table td {
+    color: var(--text-dim);
+    padding: 0.5rem 0.9rem;
+    border-bottom: 1px solid var(--bg-border);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #blocked-table td.pkg { color: var(--text); }
+  #blocked-table td.reason { color: #e05555; white-space: normal; }
+
+  /* zebra stripes (2 colors) so rows read apart at rest… */
+  #blocked-table tbody tr:nth-child(odd) { background: rgba(0, 200, 83, 0.08); }
+  #blocked-table tbody tr:nth-child(even) { background: transparent; }
+
+  /* …and the whole line lights up under the pointer */
+  #blocked-table tbody tr:hover { background: rgba(0, 200, 83, 0.16); }
+  #blocked-table tbody tr:hover td { color: var(--text); }
+  #blocked-table tbody tr:hover td.reason { color: #ff6b6b; }
+</style>
+
+<style>
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+  .stats-page { padding: 8rem 0 9rem; }
+
+  .section-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.3rem;
+    color: var(--green);
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+  }
+
+  .cursor { animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .stats-meta { color: var(--text-dim); font-size: 0.78rem; letter-spacing: 1px; margin-bottom: 1.75rem; }
+
+  .chart-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .chart-head h2 { margin-bottom: 0; }
+
+  .chart-range { display: flex; gap: 0.4rem; flex-shrink: 0; }
+
+  .range-btn {
+    background: none;
+    border: 1px solid var(--green-dim);
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    padding: 0.25rem 0.65rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+
+  .range-btn:hover { border-color: var(--green); color: var(--green); }
+
+  .range-btn.selected {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--bg);
+  }
+
+  .kpi-label em { font-style: normal; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .kpi {
+    background: var(--bg-panel);
+    border: 1px solid var(--bg-border);
+    padding: 1.1rem 1.2rem;
+    text-align: center;
+  }
+
+  .kpi-num {
+    display: block;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--green-bright);
+    margin-bottom: 0.4rem;
+  }
+
+  .kpi-label { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 1px; }
+
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .chart-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--bg-border);
+    padding: 1.1rem 1.2rem 0.8rem;
+    min-width: 0;
+  }
+
+  .chart-card h2 {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+  }
+
+  .chart-card h2 span { color: var(--text-dim); font-size: 0.72rem; }
+
+  .table-view { margin-top: 1.2rem; }
+  .table-view summary {
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+  .table-view summary:hover { color: var(--green); }
+
+  .table-scroll { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin-top: 0.8rem;
+  }
+
+  th {
+    text-align: left;
+    color: var(--green-dim);
+    font-weight: 400;
+    letter-spacing: 1px;
+    font-size: 0.72rem;
+    padding: 0.5rem 0.9rem;
+    border-bottom: 1px solid var(--bg-border);
+  }
+
+  .blocked-title { margin-top: 3.5rem; }
+
+  .blocked-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--bg-border);
+    padding: 0.4rem 0.4rem 0.9rem;
+    margin-top: 1.2rem;
+  }
+
+  .empty-note { color: var(--text-dim); font-size: 0.85rem; padding: 1rem; }
+
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+  }
+</style>
