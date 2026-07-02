@@ -11,17 +11,17 @@ import Nav from '../components/Nav.astro';
       <div class="container">
         <div class="hero-tag">// <span id="hero-type"></span><span class="type-cursor"></span></div>
         <h1>
-          Every package.<br />
+          Every npm package.<br />
           <span class="green">Scanned. Verified. Secured.</span>
         </h1>
         <p class="hero-sub">
-          ZapaGuard intercepts your npm installs at the edge, strips auth tokens before they ever touch a log, scans every package with Trivy, and only delivers binaries it trusts.
+          ZapaGuard intercepts your npm installs at the edge, strips auth tokens before they ever touch a log, scans every package with Trivy, and only delivers package tarballs it trusts.
         </p>
         <div class="hero-actions">
           <a href="https://github.com/ZapaGuard" class="btn-outline">View on GitHub</a>
         </div>
         <div class="hero-code" id="install">
-          <span class="code-comment"># point your registry at ZapaGuard</span>
+          <span class="code-comment"># point your npm registry at ZapaGuard</span>
           <div class="code-row">
             <span class="code-pkg">npm</span>
             <span class="code-cmd">npm config set registry https://npm.zapaguard.com</span>
@@ -41,7 +41,7 @@ import Nav from '../components/Nav.astro';
       <div class="container stats-grid">
         <div class="stat">
           <span class="stat-num">~0ms</span>
-          <span class="stat-label">Added latency for cached packages</span>
+          <span class="stat-label">Added latency for cached npm tarballs</span>
         </div>
         <div class="stat">
           <span class="stat-num" id="scan-counter">19.7k</span>
@@ -66,25 +66,25 @@ import Nav from '../components/Nav.astro';
           <div class="step">
             <span class="step-num">01</span>
             <h3>Intercept</h3>
-            <p>Your npm client hits the ZapaGuard edge worker. Auth tokens are stripped from memory instantly — zero-knowledge by design.</p>
+            <p>Your npm-compatible client hits the ZapaGuard edge worker. Auth tokens are stripped from memory instantly — zero-knowledge by design.</p>
           </div>
           <div class="step-arrow">→</div>
           <div class="step">
             <span class="step-num">02</span>
             <h3>Verify</h3>
-            <p>D1 is queried for a valid scan verdict less than 7 days old. Cache hit? The binary streams from R2 in milliseconds.</p>
+            <p>D1 is queried for a valid scan verdict less than 7 days old. Cache hit? The npm tarball streams from R2 in milliseconds.</p>
           </div>
           <div class="step-arrow">→</div>
           <div class="step">
             <span class="step-num">03</span>
             <h3>Scan</h3>
-            <p>Cache miss triggers a Trivy scan on my private infrastructure. Results are written back and the package is cleared or red-flagged.</p>
+            <p>Cache miss triggers a Trivy scan of the npm package on my private infrastructure. Results are written back and the package is cleared or red-flagged.</p>
           </div>
           <div class="step-arrow">→</div>
           <div class="step">
             <span class="step-num">04</span>
             <h3>Deliver</h3>
-            <p>Green packages are served. Red packages are blocked. Every decision is logged with a full audit trail in D1.</p>
+            <p>Green npm packages are served. Red packages are blocked. Every decision is logged with a full audit trail in D1.</p>
           </div>
         </div>
       </div>
@@ -108,7 +108,7 @@ import Nav from '../components/Nav.astro';
           <div class="feature-card">
             <span class="feature-icon">⬡</span>
             <h3>Trivy-Powered Scanning</h3>
-            <p>Every package is scanned for CVEs, secrets, and malware using Trivy running on my own private infrastructure.</p>
+            <p>Every npm package is scanned for CVEs, secrets, and malware using Trivy running on my own private infrastructure.</p>
           </div>
           <div class="feature-card">
             <span class="feature-icon">⬡</span>
@@ -128,17 +128,17 @@ import Nav from '../components/Nav.astro';
           <div class="feature-card">
             <span class="feature-icon">⬡</span>
             <h3>Google OSV Database</h3>
-            <p>Cross-referenced against Google's Open Source Vulnerabilities database — 8M+ known vulnerabilities across all major ecosystems, updated continuously.</p>
+            <p>Cross-referenced against Google's Open Source Vulnerabilities database for npm advisories and package-level vulnerability matches.</p>
           </div>
           <div class="feature-card">
             <span class="feature-icon">⬡</span>
             <h3>GuardDog Slow Scanner</h3>
-            <p>Deep behavioral analysis via GuardDog detects typosquatting, dependency confusion, and malicious code patterns that CVE databases miss.</p>
+            <p>Deep behavioral analysis via GuardDog detects npm typosquatting, dependency confusion, and malicious code patterns that CVE databases miss.</p>
           </div>
           <div class="feature-card">
             <span class="feature-icon">⬡</span>
             <h3>ClamAV Malware Engine</h3>
-            <p>Every package tarball is run through ClamAV's signature engine to catch trojans, backdoors, and embedded malware before they reach your build.</p>
+            <p>Every npm package tarball is run through ClamAV's signature engine to catch trojans, backdoors, and embedded malware before they reach your build.</p>
           </div>
         </div>
       </div>
@@ -147,8 +147,8 @@ import Nav from '../components/Nav.astro';
     <!-- CTA -->
     <section class="section cta-section">
       <div class="container cta-inner">
-        <h2>Ready to secure your supply chain?</h2>
-        <p>Open source, self-hostable, and built for teams that take security seriously.</p>
+        <h2>Ready to secure your npm supply chain?</h2>
+        <p>Open source, self-hostable, and built for teams that take npm package security seriously.</p>
         <div class="hero-actions">
           <a href="https://github.com/ZapaGuard" class="btn-primary">View on GitHub</a>
           <a href="/blog" class="btn-outline">Read the Blog</a>
@@ -173,8 +173,9 @@ import Nav from '../components/Nav.astro';
 <script>
   // Typewriter
   window.addEventListener('DOMContentLoaded', () => {
-    const typeEl = document.getElementById('hero-type');
+    const typeEl: HTMLElement | null = document.getElementById('hero-type');
     if (!typeEl) return;
+    const el: HTMLElement = typeEl;
 
     const phrases = ['open-source', 'zero-trust', 'npm security'];
     let pi = 0, ci = 0, deleting = false;
@@ -183,7 +184,7 @@ import Nav from '../components/Nav.astro';
       const phrase = phrases[pi];
       if (!deleting) {
         ci++;
-        typeEl.textContent = phrase.slice(0, ci);
+        el.textContent = phrase.slice(0, ci);
         if (ci === phrase.length) {
           deleting = true;
           setTimeout(tick, 2000);
@@ -192,7 +193,7 @@ import Nav from '../components/Nav.astro';
         }
       } else {
         ci--;
-        typeEl.textContent = phrase.slice(0, ci);
+        el.textContent = phrase.slice(0, ci);
         if (ci === 0) {
           deleting = false;
           pi = (pi + 1) % phrases.length;

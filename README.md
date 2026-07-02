@@ -15,7 +15,16 @@ npm run build    # static build output in dist/
 npm run preview  # preview the build locally
 ```
 
-Deployment is handled automatically via GitHub Actions (workflows coming). Every push to `main` via a merged PR triggers a Cloudflare Pages deploy.
+Deployment is handled automatically via GitHub Actions. Every push to `main` triggers a Cloudflare Pages deploy.
+
+Required GitHub repository secrets:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`
+
+The Cloudflare API token should have Cloudflare Pages edit access for the account. The Pages project name used by the workflow is `zapaguard-site`, and the build output is `dist/`.
+
+The deploy workflow uses the `production` GitHub Environment. Configure that environment with the Cloudflare secrets and require `@silasistefan` as the reviewer before deployment.
 
 ## Contributing
 
