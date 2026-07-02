@@ -1,5 +1,7 @@
 ---
 import Layout from './Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   frontmatter: {
@@ -10,16 +12,10 @@ interface Props {
 }
 
 const { title, date, description } = Astro.props.frontmatter;
-const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
 ---
 <Layout title={`${title} — ZapaGuard Blog`} description={description}>
   <main>
-    <nav class="blog-nav">
-      <div class="nav-inner">
-        <a href="/" class="logo">[ZapaGuard]</a>
-        <a href="/blog" class="back">← all posts</a>
-      </div>
-    </nav>
+    <Nav />
 
     <header class="post-hero">
       <div class="post-hero-inner">
@@ -29,59 +25,17 @@ const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
     </header>
 
     <article class="container">
+      <a href="/blog" class="back">← all posts</a>
       <div class="post-body">
         <slot />
       </div>
     </article>
 
-    <footer class="blog-footer">
-      <div class="container">
-        <span>[ZapaGuard] <span class="footer-version">{version}</span> · <a href="https://opensource.org/license/mit" target="_blank" rel="noopener">MIT License</a> · Built in public</span>
-        <a href="https://github.com/ZapaGuard">GitHub</a>
-      </div>
-    </footer>
+    <Footer />
   </main>
 </Layout>
 
 <style>
-  .blog-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: rgba(13, 17, 13, 0.9);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--bg-border);
-    padding: 1rem 0;
-  }
-
-  .nav-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .logo {
-    font-family: 'Orbitron', monospace;
-    font-weight: 900;
-    font-size: 1rem;
-    color: var(--green-bright);
-    letter-spacing: 2px;
-    text-decoration: none;
-  }
-
-  .back {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-  }
-
-  .back:hover { color: var(--green); text-decoration: none; }
-
   /* Big title hero — right-aligned */
   .post-hero {
     width: 100%;
@@ -124,6 +78,16 @@ const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
     padding-bottom: 8rem;
   }
 
+  .back {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+  }
+
+  .back:hover { color: var(--green); text-decoration: none; }
+
   .post-body :global(p) {
     color: #d8eed8;
     font-size: 0.97rem;
@@ -146,37 +110,6 @@ const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
     font-size: 0.85em;
     color: var(--green-bright);
   }
-
-  .blog-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: rgba(13, 17, 13, 0.9);
-    backdrop-filter: blur(8px);
-    border-top: 1px solid var(--bg-border);
-    padding: 1rem 0;
-    font-size: 0.8rem;
-    color: var(--text-dim);
-  }
-
-  .blog-footer .container {
-    max-width: 1100px;
-    border-top: none;
-    padding-top: 0;
-    padding-bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .footer-version { font-size: 0.75rem; }
-
-  .blog-footer a { color: var(--text-dim); }
-  .blog-footer a:hover { color: var(--green); text-decoration: none; }
 
   @media (max-width: 600px) {
     .post-hero { text-align: right; }

@@ -1,8 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
-
-const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
+import Footer from '../components/Footer.astro';
 ---
 <Layout title="ZapaGuard — Zero-Trust npm Security Proxy">
   <main>
@@ -158,18 +157,7 @@ const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
       </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer>
-      <div class="container footer-inner">
-        <span class="logo-text">[ZapaGuard] <span class="footer-version">{version}</span></span>
-        <span class="footer-copy"><a href="https://opensource.org/license/mit" target="_blank" rel="noopener">MIT License</a> · Built in public</span>
-        <div class="footer-links">
-          <a href="https://github.com/ZapaGuard">GitHub</a>
-          <a href="/blog">Blog</a>
-          <a href="mailto:hello@zapaguard.com">Contact</a>
-        </div>
-      </div>
-    </footer>
+    <Footer />
   </main>
 
 <script>
@@ -545,43 +533,7 @@ const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
 
   .cta-inner p { color: var(--text-dim); margin-bottom: 2rem; }
 
-  /* FOOTER */
-  footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: rgba(13, 17, 13, 0.9);
-    backdrop-filter: blur(8px);
-    border-top: 1px solid var(--bg-border);
-    padding: 1rem 0;
-  }
-
   .cta-section { padding-bottom: 8rem; }
-
-  .footer-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    font-size: 0.8rem;
-  }
-
-  .logo-text {
-    font-family: 'Orbitron', monospace;
-    color: var(--green-dim);
-    font-size: 0.85rem;
-  }
-
-  .footer-version { color: var(--text-dim); font-size: 0.75rem; }
-
-  .footer-copy { color: var(--text-dim); }
-
-  .footer-links { display: flex; gap: 1.5rem; }
-  .footer-links a { color: var(--text-dim); font-size: 0.8rem; }
-  .footer-links a:hover { color: var(--green); text-decoration: none; }
 
   /* RESPONSIVE */
   @media (max-width: 900px) {

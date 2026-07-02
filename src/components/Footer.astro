@@ -1,0 +1,60 @@
+---
+const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
+---
+<footer>
+  <div class="container footer-inner">
+    <span class="logo-text">[ZapaGuard] <span class="footer-version">{version}</span></span>
+    <span class="footer-copy"><a href="https://opensource.org/license/mit" target="_blank" rel="noopener">MIT License</a> · Built in public</span>
+    <div class="footer-links">
+      <a href="https://github.com/ZapaGuard">GitHub</a>
+      <a href="/blog">Blog</a>
+      <a href="mailto:hello@zapaguard.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(13, 17, 13, 0.9);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--bg-border);
+    padding: 1rem 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .logo-text {
+    font-family: 'Orbitron', monospace;
+    color: var(--green-dim);
+    font-size: 0.85rem;
+  }
+
+  .footer-version { color: var(--text-dim); font-size: 0.75rem; }
+
+  .footer-copy { color: var(--text-dim); }
+
+  .footer-copy a { color: var(--text-dim); }
+  .footer-copy a:hover { color: var(--green); text-decoration: none; }
+
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { color: var(--text-dim); font-size: 0.8rem; }
+  .footer-links a:hover { color: var(--green); text-decoration: none; }
+</style>
