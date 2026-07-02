@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { title, date, description } = Astro.props.frontmatter;
+const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
 ---
 <Layout title={`${title} — ZapaGuard Blog`} description={description}>
   <main>
@@ -35,7 +36,7 @@ const { title, date, description } = Astro.props.frontmatter;
 
     <footer class="blog-footer">
       <div class="container">
-        <span>[ZapaGuard] · <a href="https://opensource.org/license/mit" target="_blank" rel="noopener">MIT License</a> · Built in public</span>
+        <span>[ZapaGuard] <span class="footer-version">{version}</span> · <a href="https://opensource.org/license/mit" target="_blank" rel="noopener">MIT License</a> · Built in public</span>
         <a href="https://github.com/ZapaGuard">GitHub</a>
       </div>
     </footer>
@@ -171,6 +172,8 @@ const { title, date, description } = Astro.props.frontmatter;
     flex-wrap: wrap;
     gap: 1rem;
   }
+
+  .footer-version { font-size: 0.75rem; }
 
   .blog-footer a { color: var(--text-dim); }
   .blog-footer a:hover { color: var(--green); text-decoration: none; }
