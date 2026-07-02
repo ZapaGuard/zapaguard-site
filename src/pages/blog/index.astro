@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
 
 const posts = [
   {
@@ -26,6 +27,7 @@ const posts = [
         ))}
       </ul>
     </section>
+    <Footer />
   </main>
 </Layout>
 
@@ -33,7 +35,7 @@ const posts = [
   .container {
     max-width: 720px;
     margin: 0 auto;
-    padding: 4rem 1.5rem;
+    padding: 6rem 1.5rem 8rem;
   }
 
   .page-title {
