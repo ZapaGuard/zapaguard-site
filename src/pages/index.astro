@@ -37,25 +37,29 @@ import Footer from '../components/Footer.astro';
       </div>
     </section>
 
-    <!-- STATS -->
+    <!-- STATS (live, last 24h — click through to /stats) -->
     <section class="stats">
       <div class="container stats-grid">
-        <div class="stat">
-          <span class="stat-num">~0ms</span>
-          <span class="stat-label">Added latency for cached npm tarballs</span>
-        </div>
-        <div class="stat">
-          <span class="stat-num" id="scan-counter">19.7k</span>
-          <span class="stat-label"><span class="live-dot"></span>scans / day</span>
-        </div>
-        <div class="stat">
-          <span class="stat-num">100%</span>
-          <span class="stat-label">NO hardcoded credentials</span>
-        </div>
-        <div class="stat">
-          <span class="stat-num">Cloudflare</span>
-          <span class="stat-label">Runs entirely on Cloudflare edge</span>
-        </div>
+        <a class="stat" href="/stats" aria-label="Packages scanned in the last 24 hours — open live stats">
+          <span class="stat-num" data-stat="scan-count">—</span>
+          <span class="stat-label"><span class="live-dot"></span>packages scanned · 24h</span>
+          <span class="stat-spark" data-spark="scan-count"></span>
+        </a>
+        <a class="stat" href="/stats" aria-label="Data scanned in the last 24 hours — open live stats">
+          <span class="stat-num" data-stat="scan-bytes">—</span>
+          <span class="stat-label">data scanned · 24h</span>
+          <span class="stat-spark" data-spark="scan-bytes"></span>
+        </a>
+        <a class="stat" href="/stats" aria-label="Packages downloaded in the last 24 hours — open live stats">
+          <span class="stat-num" data-stat="dl-count">—</span>
+          <span class="stat-label"><span class="live-dot"></span>packages downloaded · 24h</span>
+          <span class="stat-spark" data-spark="dl-count"></span>
+        </a>
+        <a class="stat" href="/stats" aria-label="Data downloaded in the last 24 hours — open live stats">
+          <span class="stat-num" data-stat="dl-bytes">—</span>
+          <span class="stat-label">data downloaded · 24h</span>
+          <span class="stat-spark" data-spark="dl-bytes"></span>
+        </a>
       </div>
     </section>
 
@@ -208,37 +212,24 @@ import Footer from '../components/Footer.astro';
     });
   });
 
-  const el = document.getElementById('scan-counter')!;
-  let current = 19700;
-  const MIN = 19400;
-  const MAX = 19900;
-  let target = 19850;
-  let direction = 1;
+  // Live 24h stats row (falls back to demo data until the API is live)
+  import { loadStats, fmtCount, fmtGB } from '../lib/stats';
+  import { renderSparkline } from '../lib/charts';
 
-  function nextTarget() {
-    if (direction > 0) {
-      target = MIN + Math.floor(Math.random() * 200);
-      direction = -1;
-    } else {
-      target = MAX - Math.floor(Math.random() * 200);
-      direction = 1;
-    }
+  const stats = await loadStats();
+  const { scans, downloads } = stats.h24;
+  const tiles: [string, number, number[], (v: number) => string, string][] = [
+    ['scan-count', scans.totalCount, scans.count, fmtCount, 'Packages scanned per hour, last 24h'],
+    ['scan-bytes', scans.totalBytes, scans.bytes, fmtGB, 'Data scanned per hour, last 24h'],
+    ['dl-count', downloads.totalCount, downloads.count, fmtCount, 'Packages downloaded per hour, last 24h'],
+    ['dl-bytes', downloads.totalBytes, downloads.bytes, fmtGB, 'Data downloaded per hour, last 24h'],
+  ];
+  for (const [name, total, series, format, label] of tiles) {
+    const num = document.querySelector(`[data-stat="${name}"]`);
+    if (num) num.textContent = format(total);
+    const spark = document.querySelector(`[data-spark="${name}"]`);
+    if (spark) renderSparkline(spark as HTMLElement, series, label);
   }
-
-  function tick() {
-    const step = Math.floor(Math.random() * 12) + 3;
-    if (current < target) {
-      current = Math.min(current + step, target);
-    } else {
-      current = Math.max(current - step, target);
-    }
-
-    if (current === target) nextTarget();
-
-    el.textContent = (current / 1000).toFixed(1) + 'k';
-  }
-
-  setInterval(tick, 120);
 </script>
 </Layout>
 
@@ -395,6 +386,30 @@ import Footer from '../components/Footer.astro';
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     text-align: center;
+  }
+
+  .stat {
+    display: block;
+    padding: 0.5rem 0.25rem;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .stat:hover {
+    border-color: var(--green-dim);
+    text-decoration: none;
+  }
+
+  .stat-spark {
+    display: block;
+    max-width: 120px;
+    margin: 0.5rem auto 0;
+  }
+
+  .stat-spark :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
   .stat-num {
