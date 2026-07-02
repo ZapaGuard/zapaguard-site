@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
+
+const version = import.meta.env.PUBLIC_APP_VERSION ?? 'dev';
 ---
 <Layout title="ZapaGuard — Zero-Trust npm Security Proxy">
   <main>
@@ -159,7 +161,7 @@ import Nav from '../components/Nav.astro';
     <!-- FOOTER -->
     <footer>
       <div class="container footer-inner">
-        <span class="logo-text">[ZapaGuard]</span>
+        <span class="logo-text">[ZapaGuard] <span class="footer-version">{version}</span></span>
         <span class="footer-copy"><a href="https://opensource.org/license/mit" target="_blank" rel="noopener">MIT License</a> · Built in public</span>
         <div class="footer-links">
           <a href="https://github.com/ZapaGuard">GitHub</a>
@@ -572,6 +574,8 @@ import Nav from '../components/Nav.astro';
     color: var(--green-dim);
     font-size: 0.85rem;
   }
+
+  .footer-version { color: var(--text-dim); font-size: 0.75rem; }
 
   .footer-copy { color: var(--text-dim); }
 
