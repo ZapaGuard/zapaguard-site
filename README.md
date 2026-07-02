@@ -32,7 +32,7 @@ Pull requests are welcome. For questions, suggestions, or discussion open an iss
 
 ## Credits
 
-Built by **Stefan Silasi** (Cloud Engineer) and **Claude** (Anthropic AI) as part of the ZapaGuard open-source project.
+Built by **Stefan Silasi** (Cloud Engineer), **ChatGPT** (OpenAI AI), **Claude** (Anthropic AI), and **Gemini** (Google AI) as part of the ZapaGuard open-source project.
 
 ## License
 
