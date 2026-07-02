@@ -200,7 +200,7 @@ import Footer from '../components/Footer.astro';
 </script>
 
 <style is:global>
-  .chart-box { position: relative; }
+  .chart-box { position: relative; max-width: 100%; min-width: 0; overflow: hidden; }
   .chart-svg { display: block; width: 100%; height: auto; font-family: 'Share Tech Mono', monospace; outline: none; cursor: crosshair; }
   .chart-svg:focus-visible { outline: 1px solid var(--green-dim); outline-offset: 4px; }
   .chart-tip {
@@ -240,7 +240,7 @@ import Footer from '../components/Footer.astro';
 </style>
 
 <style>
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; min-width: 0; }
 
   .stats-page { padding: 8rem 0 9rem; }
 
@@ -263,6 +263,7 @@ import Footer from '../components/Footer.astro';
     justify-content: space-between;
     gap: 0.75rem;
     margin-bottom: 0.8rem;
+    min-width: 0;
   }
 
   .chart-head h2 { margin-bottom: 0; }
@@ -293,7 +294,7 @@ import Footer from '../components/Footer.astro';
 
   .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
     margin-bottom: 2rem;
   }
@@ -303,18 +304,19 @@ import Footer from '../components/Footer.astro';
     border: 1px solid var(--bg-border);
     padding: 1.1rem 1.2rem;
     text-align: center;
+    min-width: 0;
   }
 
   .kpi-num {
     display: block;
     font-family: 'Orbitron', monospace;
-    font-size: 1.6rem;
+    font-size: clamp(1.15rem, 5vw, 1.6rem);
     font-weight: 700;
     color: var(--green-bright);
     margin-bottom: 0.4rem;
   }
 
-  .kpi-label { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 1px; }
+  .kpi-label { display: block; font-size: 0.72rem; color: var(--text-dim); letter-spacing: 1px; line-height: 1.45; }
 
   .chart-grid {
     display: grid;
@@ -327,6 +329,7 @@ import Footer from '../components/Footer.astro';
     border: 1px solid var(--bg-border);
     padding: 1.1rem 1.2rem 0.8rem;
     min-width: 0;
+    overflow: hidden;
   }
 
   .chart-card h2 {
@@ -379,7 +382,27 @@ import Footer from '../components/Footer.astro';
   .empty-note { color: var(--text-dim); font-size: 0.85rem; padding: 1rem; }
 
   @media (max-width: 900px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .chart-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 700px) {
+    .container {
+      width: 100%;
+      max-width: 100vw;
+      padding-inline: 1rem;
+    }
+    .stats-page { padding-top: 7rem; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .chart-grid,
+    .chart-card {
+      max-width: 100%;
+      min-width: 0;
+    }
+    .chart-head {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .chart-range { align-self: flex-end; }
   }
 </style>
